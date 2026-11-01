@@ -22,6 +22,15 @@ export function initNavigation() {
             closeProfileDropdown();
         });
     });
+
+    // Listen for custom auth navigation events
+    document.addEventListener('navigateToLogin', () => {
+        showLoginPage();
+    });
+
+    document.addEventListener('navigateToRegister', () => {
+        showRegisterPage();
+    });
 }
 
 export function navigateTo(page) {
@@ -31,6 +40,32 @@ export function navigateTo(page) {
     updateActiveState(page);
     updatePageTitle(page);
     loadPageContent(page);
+}
+
+export function showLoginPage() {
+    currentPage = 'login';
+    const pageContent = document.getElementById('pageContent');
+    
+    import('./pages/auth/login.js').then(module => {
+        pageContent.innerHTML = module.renderLogin();
+        module.initLoginForm();
+    }).catch(error => {
+        console.error('Failed to load login page:', error);
+        pageContent.innerHTML = '<p>Error loading login page. Please refresh.</p>';
+    });
+}
+
+export function showRegisterPage() {
+    currentPage = 'register';
+    const pageContent = document.getElementById('pageContent');
+    
+    import('./pages/auth/register.js').then(module => {
+        pageContent.innerHTML = module.renderRegister();
+        module.initRegisterForm();
+    }).catch(error => {
+        console.error('Failed to load register page:', error);
+        pageContent.innerHTML = '<p>Error loading register page. Please refresh.</p>';
+    });
 }
 
 function updateActiveState(page) {
@@ -76,6 +111,7 @@ function loadPageContent(page) {
         case 'subjects':
             import('./pages/subjects.js').then(module => {
                 pageContent.innerHTML = module.renderSubjects();
+                module.initSubjectsPage();
             });
             break;
         case 'tasks':
@@ -101,6 +137,7 @@ function loadPageContent(page) {
         case 'profile':
             import('./pages/profile.js').then(module => {
                 pageContent.innerHTML = module.renderProfile();
+                module.initProfilePage();
             });
             break;
         default:
